@@ -1,26 +1,97 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ── AlienHub brand palette (Tailwind v4 CSS-first theme) ── */
+@theme {
+  --color-space: #070707;
+  --color-surface: #0d1410;
+  --color-card: #101a13;
+  --color-edge: #1c3b2b;
+  --color-edge2: #243d2e;
+  --color-alien: #8cff9e;
+  --color-alien-dim: #46d67a;
+  --color-nebula: #1c3b2b;
+  --color-amber: #ffb347;
+  --color-fog: #e6ebe7;
+  --color-fog-dim: #8a9a93;
+  --color-danger: #ff4d4d;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-orbitron);
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Light theme overrides (toggled by .light on <html>) ── */
+html.light {
+  --color-space: #f5f6f5;
+  --color-surface: #ffffff;
+  --color-card: #ffffff;
+  --color-edge: #e4e7e4;
+  --color-edge2: #d6dbd6;
+  --color-alien: #15a34a;
+  --color-alien-dim: #11833b;
+  --color-nebula: #d6f5e0;
+  --color-amber: #b45309;
+  --color-fog: #1b211e;
+  --color-fog-dim: #5f6b65;
+  --color-danger: #dc2626;
+  color-scheme: light;
+}
+
+html {
+  background: var(--color-space);
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-space);
+  color: var(--color-fog);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* thin alien scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--color-space); }
+::-webkit-scrollbar-thumb { background: var(--color-edge); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-alien-dim); }
+
+.font-display { font-family: var(--font-display), sans-serif; }
+
+/* Frosted glass — floating nav buttons. Explicit per-theme so it stays
+   visible in both light and dark. */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+}
+.glass:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+html.light .glass {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+html.light .glass:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Subtle "settle" press feedback on all interactive controls. */
+@media (prefers-reduced-motion: no-preference) {
+  button:not(:disabled),
+  .btn-press {
+    transition:
+      transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1),
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  button:not(:disabled):active,
+  .btn-press:active {
+    transform: scale(0.94);
+  }
 }
