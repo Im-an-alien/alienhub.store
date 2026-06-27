@@ -7,8 +7,10 @@ const nextConfig: NextConfig = {
   //   Windows: run `ipconfig` → copy the IPv4 Address (e.g. 192.168.1.23)
   //   Then open the site on your phone at  http://<that-ip>:3000
   allowedDevOrigins: [
-    "192.168.68.107", // this PC's current LAN IP (from `next dev` Network URL)
-    // If your PC's IP changes (run `ipconfig` to check), update this and restart.
+    "192.168.68.101", // this PC's LAN IP (from the `next dev` Network URL)
+    "192.168.68.107", // previous IP (kept in case DHCP hands it back)
+    // PC's IP changes with DHCP. If the phone gets blocked again, add the new
+    // "Network" IP shown by `next dev` here and restart the dev server.
   ],
 };
 

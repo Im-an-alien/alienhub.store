@@ -1,17 +1,29 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import Link from "next/link";
+import { motion, type Variants } from "framer-motion";
+
+const MotionLink = motion.create(Link);
+
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.15, delayChildren: 0.15 } },
+};
+const item: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.2, 0.8, 0.2, 1] } },
+};
 
 export function HeroLogo() {
   return (
-    <div className="flex flex-col items-center">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.92, y: 8 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.9, ease: [0.2, 0.8, 0.2, 1] }}
-      >
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="flex flex-col items-center text-center"
+    >
+      <motion.div variants={item}>
         <Image
           src="/logo.png"
           alt="Alien Hub"
@@ -22,21 +34,24 @@ export function HeroLogo() {
         />
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.1, duration: 0.8 }}
-        className="mt-14"
-        aria-hidden="true"
+      <motion.p
+        variants={item}
+        className="mt-6 max-w-md font-mono text-[11px] uppercase tracking-[0.25em] text-fog-dim sm:text-xs"
       >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-          className="text-fog-dim"
+        Alien-grade gaming gear · delivered across Iraq
+      </motion.p>
+
+      <motion.div variants={item} className="mt-8">
+        <MotionLink
+          href="/shop"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.94 }}
+          transition={{ type: "spring", stiffness: 400, damping: 22 }}
+          className="inline-block rounded-full bg-alien px-8 py-3 font-display text-xs font-bold uppercase tracking-widest text-black transition-colors hover:bg-alien-dim"
         >
-          <ChevronDown size={26} />
-        </motion.div>
+          Shop all gear
+        </MotionLink>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
