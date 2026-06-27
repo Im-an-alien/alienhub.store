@@ -2,10 +2,16 @@
 
 import { useEffect, useRef } from "react";
 
-/**
- * Warp-speed starfield — gives the feeling of flying through space.
- * Rendered as a full-bleed canvas behind the hero. Dark in both themes.
- */
+// Colors adapt to the active theme (the .light class on <html>).
+function themeColors() {
+  const light =
+    typeof document !== "undefined" &&
+    document.documentElement.classList.contains("light");
+  return light
+    ? { fade: "238, 241, 244", streak: "20, 140, 80", bg: "#eef1f4" }
+    : { fade: "7, 7, 7", streak: "140, 255, 158", bg: "#070707" };
+}
+
 export function Starfield() {
   const ref = useRef<HTMLCanvasElement>(null);
 
@@ -14,6 +20,9 @@ export function Starfield() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    let colors = themeColors();
+    canvas.style.background = colors.bg;
 
     let w = 0;
     let h = 0;
@@ -55,7 +64,7 @@ export function Starfield() {
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
     function frame() {
-      ctx!.fillStyle = "rgba(7, 7, 7, 0.4)";
+      ctx!.fillStyle = `rgba(${colors.fade}, 0.4)`;
       ctx!.fillRect(0, 0, w, h);
 
       for (const s of stars) {
@@ -74,7 +83,7 @@ export function Starfield() {
 
         const size = Math.max(0, (1 - s.z / w) * 2.2);
         const alpha = Math.min(1, (1 - s.z / w) * 1.2);
-        ctx!.strokeStyle = `rgba(140, 255, 158, ${alpha * 0.9})`;
+        ctx!.strokeStyle = `rgba(${colors.streak}, ${alpha * 0.9})`;
         ctx!.lineWidth = size;
         ctx!.beginPath();
         ctx!.moveTo(px, py);
@@ -85,17 +94,31 @@ export function Starfield() {
     }
 
     if (reduce) {
-      // Draw a single static frame for reduced-motion users.
-      ctx.fillStyle = "#070707";
+      ctx.fillStyle = colors.bg;
       ctx.fillRect(0, 0, w, h);
     } else {
       raf = requestAnimationFrame(frame);
     }
 
+    // React to theme switches (light/dark) live.
+    const observer = new MutationObserver(() => {
+      colors = themeColors();
+      canvas.style.background = colors.bg;
+      if (reduce) {
+        ctx.fillStyle = colors.bg;
+        ctx.fillRect(0, 0, w, h);
+      }
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
     const onResize = () => resize();
     window.addEventListener("resize", onResize);
     return () => {
       cancelAnimationFrame(raf);
+      observer.disconnect();
       window.removeEventListener("resize", onResize);
     };
   }, []);
@@ -104,7 +127,6 @@ export function Starfield() {
     <canvas
       ref={ref}
       className="absolute inset-0 h-full w-full"
-      style={{ background: "#070707" }}
       aria-hidden="true"
     />
   );
