@@ -5,6 +5,9 @@ import { Starfield } from "@/components/starfield";
 import { ProductCard } from "./_components/product-card";
 import { CategorySidebar } from "./_components/category-sidebar";
 
+// Render at request time (reads live products/stock from the DB).
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [featuredRaw, bundles, newest] = await Promise.all([
     fetchCards({ ...VISIBLE, isFeatured: true }, { createdAt: "desc" }, 8),

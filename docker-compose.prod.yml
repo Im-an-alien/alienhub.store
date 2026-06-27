@@ -1,0 +1,40 @@
+# Production / staging stack: Postgres + the Next.js app.
+# Reads settings from a .env file next to this file (see .env.production.example).
+# Start with:  docker compose -f docker-compose.prod.yml up -d --build
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: alienhub
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: alienhub
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alienhub -d alienhub"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://alienhub:${DB_PASSWORD}@db:5432/alienhub?schema=public"
+      AUTH_SECRET: ${AUTH_SECRET}
+      DELIVERY_FEE: "5000"
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    volumes:
+      - uploads:/app/public/uploads
+
+volumes:
+  pgdata:
+  uploads:

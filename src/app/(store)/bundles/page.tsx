@@ -2,6 +2,7 @@ import { fetchCards, VISIBLE } from "@/lib/catalog";
 import { ProductCard } from "../_components/product-card";
 
 export const metadata = { title: "Bundles & combos — AlienHub.Store" };
+export const dynamic = "force-dynamic";
 
 export default async function BundlesPage() {
   const bundles = await fetchCards({ ...VISIBLE, isBundle: true }, { createdAt: "desc" });
